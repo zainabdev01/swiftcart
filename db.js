@@ -2,10 +2,10 @@ require('dotenv').config();
 const sql = require('mssql');
 
 const config = {
-    server: process.env.DB_SERVER,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    server: process.env.swiftcart-server.database.windows.net,
+    database: process.env.free-sql-db-3637408,
+    user: process.env.swiftadmin,
+    password: process.env.Swift1234!,
     options: {
         encrypt: true,
         trustServerCertificate: false,
@@ -21,7 +21,7 @@ const config = {
 const poolPromise = new sql.ConnectionPool(config)
     .connect()
     .then(pool => {
-        console.log('✅ Azure SQL Connected!');
+        console.log('✅ Azure SQL se Connected ho gaye!');
         return pool;
     })
     .catch(err => {
