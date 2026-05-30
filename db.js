@@ -1,18 +1,14 @@
-// =============================================
-// db.js — SQL Server Connection
-// =============================================
-
 require('dotenv').config();
 const sql = require('mssql');
 
 const config = {
-    server: 'DESKTOP-MMKUS2U',
-    database: 'AdvancedECommerceDB',
-    user: 'sa',
-    password: 'zainab123',
+    server: process.env.DB_SERVER,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     options: {
-        encrypt: false,
-        trustServerCertificate: true,
+        encrypt: true,
+        trustServerCertificate: false,
         enableArithAbort: true
     },
     pool: {
@@ -25,7 +21,7 @@ const config = {
 const poolPromise = new sql.ConnectionPool(config)
     .connect()
     .then(pool => {
-        console.log('✅ SQL Server se Connected ho gaye!');
+        console.log('✅ Azure SQL Connected!');
         return pool;
     })
     .catch(err => {
