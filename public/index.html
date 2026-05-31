@@ -1,30 +1,31 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopEase — E-Commerce Store</title>
+    <title>SwiftCart — E-Commerce Store</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52E0;
-            --accent: #FF6584;
-            --bg: #F8F9FF;
+            --primary: #0F52BA;
+            --primary-dark: #0A3D8F;
+            --primary-light: #E8F0FE;
+            --accent: #FF5722;
+            --bg: #F5F7FA;
             --card-bg: #fff;
-            --text: #2D3748;
+            --text: #1A202C;
             --text-light: #718096;
             --border: #E2E8F0;
-            --success: #48BB78;
-            --danger: #FC8181;
-            --shadow: 0 4px 20px rgba(108,99,255,0.1);
+            --success: #38A169;
+            --danger: #E53E3E;
+            --warning: #D69E2E;
+            --shadow: 0 4px 20px rgba(15,82,186,0.1);
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
         /* NAVBAR */
         .navbar {
-            background: #fff;
-            box-shadow: var(--shadow);
+            background: var(--primary);
             padding: 0 2rem;
             display: flex;
             align-items: center;
@@ -33,24 +34,25 @@
             top: 0;
             z-index: 1000;
             height: 64px;
+            box-shadow: 0 2px 12px rgba(15,82,186,0.3);
         }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
-        .logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 1rem; align-items: center; }
+        .logo { font-size: 1.6rem; font-weight: 900; color: #fff; text-decoration: none; cursor: pointer; letter-spacing: -0.5px; }
+        .logo span { color: #FFD700; }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
         .nav-links button {
-            background: none;
+            background: rgba(255,255,255,0.1);
             border: none;
             cursor: pointer;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.9rem;
             border-radius: 8px;
-            font-size: 0.9rem;
-            color: var(--text);
+            font-size: 0.85rem;
+            color: #fff;
             font-weight: 500;
             transition: all 0.2s;
         }
-        .nav-links button:hover { background: var(--bg); }
-        .nav-links .btn-primary { background: var(--primary); color: #fff; }
-        .nav-links .btn-primary:hover { background: var(--primary-dark); }
+        .nav-links button:hover { background: rgba(255,255,255,0.2); }
+        .nav-links .btn-primary { background: #FFD700; color: var(--primary); font-weight: 700; }
+        .nav-links .btn-primary:hover { background: #FFC200; }
         .cart-badge {
             background: var(--accent);
             color: #fff;
@@ -62,7 +64,6 @@
             align-items: center;
             justify-content: center;
             margin-left: 4px;
-            vertical-align: middle;
         }
 
         /* PAGES */
@@ -71,7 +72,7 @@
 
         /* HERO */
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, #8B5CF6 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #1a73e8 100%);
             color: #fff;
             border-radius: 20px;
             padding: 3rem;
@@ -79,8 +80,20 @@
             display: flex;
             align-items: center;
             gap: 2rem;
+            position: relative;
+            overflow: hidden;
         }
-        .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .hero h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; }
         .hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem; }
         .hero-emoji { font-size: 6rem; }
         .btn {
@@ -97,8 +110,6 @@
         }
         .btn-white { background: #fff; color: var(--primary); }
         .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .btn-accent { background: var(--accent); color: #fff; }
-        .btn-outline { background: transparent; border: 2px solid #fff; color: #fff; }
 
         /* FILTERS */
         .filters {
@@ -119,16 +130,6 @@
         }
         .filters input:focus, .filters select:focus { border-color: var(--primary); }
         .filters input { flex: 1; min-width: 200px; }
-        .search-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
 
         /* PRODUCTS GRID */
         .products-grid {
@@ -144,17 +145,17 @@
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
-        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(108,99,255,0.15); }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(15,82,186,0.18); }
         .product-img {
             height: 180px;
-            background: linear-gradient(135deg, #E9E7FF, #F3F0FF);
+            background: linear-gradient(135deg, #E8F0FE, #D2E3FC);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 4rem;
         }
         .product-info { padding: 1rem; }
-        .product-category { font-size: 0.75rem; color: var(--primary); font-weight: 600; text-transform: uppercase; }
+        .product-category { font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; }
         .product-name { font-size: 1rem; font-weight: 700; margin: 0.25rem 0; }
         .product-brand { font-size: 0.8rem; color: var(--text-light); }
         .product-price { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-top: 0.5rem; }
@@ -276,7 +277,7 @@
         .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
         .modal h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; }
         .product-detail-grid { display: grid; gap: 1rem; }
-        .product-detail-img { height: 200px; background: linear-gradient(135deg, #E9E7FF, #F3F0FF); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+        .product-detail-img { height: 200px; background: linear-gradient(135deg, #E8F0FE, #D2E3FC); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
         .product-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 1rem 0; }
         .meta-item { background: var(--bg); padding: 0.5rem 1rem; border-radius: 8px; }
         .meta-item .label { font-size: 0.75rem; color: var(--text-light); }
@@ -300,7 +301,7 @@
             max-width: 350px;
         }
         .toast.success { background: var(--success); }
-        .toast.error { background: #E53E3E; }
+        .toast.error { background: var(--danger); }
         .toast.show { opacity: 1; transform: translateY(0); }
 
         /* LOADING */
@@ -309,15 +310,42 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ADMIN PANEL */
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 2px solid var(--border); padding-bottom: 1rem; }
+        .admin-tab { padding: 0.6rem 1.2rem; border-radius: 8px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+        .admin-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .stat-card { background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow); text-align: center; }
         .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
         .stat-card .stat-label { font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem; }
         .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .admin-card { background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+        .admin-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        /* PRODUCT TABLE in admin */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: var(--bg); color: var(--text); padding: 0.75rem 1rem; text-align: left; font-weight: 700; font-size: 0.85rem; border-bottom: 2px solid var(--border); }
+        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+        .data-table tr:hover td { background: var(--bg); }
+        .action-btn { padding: 0.3rem 0.7rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-right: 4px; }
+        .edit-btn { background: #EBF4FF; color: var(--primary); }
+        .delete-btn { background: #FFF5F5; color: var(--danger); }
+
+        /* CUSTOMER TRACK */
+        .customer-row { background: #fff; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: var(--shadow); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .customer-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #1a73e8); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1rem; }
+
+        /* PAYMENT INFO FIELDS */
+        .payment-info-fields { background: var(--bg); border-radius: 12px; padding: 1rem; margin-top: 0.75rem; border: 2px solid var(--primary-light); }
+        .payment-info-fields .field-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
 
         /* PROFILE */
         .profile-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: var(--shadow); max-width: 600px; }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #8B5CF6); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; font-weight: 800; margin-bottom: 1rem; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #1a73e8); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; font-weight: 800; margin-bottom: 1rem; }
+
+        /* EDIT PRODUCT MODAL */
+        .edit-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -325,8 +353,9 @@
             .hero-emoji { display: none; }
             .hero h1 { font-size: 1.8rem; }
             .navbar { padding: 0 1rem; }
-            .nav-links button span { display: none; }
+            .nav-links button span.txt { display: none; }
             .page { padding: 1rem; }
+            .edit-modal-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -334,16 +363,16 @@
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <a class="logo" onclick="showPage('home')" style="cursor:pointer">Shop<span>Ease</span></a>
+    <a class="logo" onclick="showPage('home')">Swift<span>Cart</span></a>
     <div class="nav-links">
-        <button onclick="showPage('home')">🏠 <span>Home</span></button>
-        <button onclick="showPage('cart')">🛒 <span>Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
-        <button onclick="showPage('orders')" id="ordersBtn" style="display:none">📦 <span>Orders</span></button>
-        <button onclick="showPage('wishlist')" id="wishlistBtn" style="display:none">❤️ <span>Wishlist</span></button>
-        <button onclick="showPage('admin')" id="adminBtn" style="display:none">⚙️ <span>Admin</span></button>
-        <button onclick="showPage('profile')" id="profileBtn" class="btn-primary" style="display:none">👤 <span>Profile</span></button>
+        <button onclick="showPage('home')">🏠 <span class="txt">Home</span></button>
+        <button onclick="showPage('cart')">🛒 <span class="txt">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
+        <button onclick="showPage('orders')" id="ordersBtn" style="display:none">📦 <span class="txt">Orders</span></button>
+        <button onclick="showPage('wishlist')" id="wishlistBtn" style="display:none">❤️ <span class="txt">Wishlist</span></button>
+        <button onclick="showPage('admin')" id="adminBtn" style="display:none">⚙️ <span class="txt">Admin</span></button>
+        <button onclick="showPage('profile')" id="profileBtn" class="btn-primary" style="display:none">👤 <span class="txt">Profile</span></button>
         <button onclick="showPage('login')" id="loginBtn" class="btn-primary">Login</button>
-        <button onclick="logout()" id="logoutBtn" style="display:none; color: var(--accent);">Logout</button>
+        <button onclick="logout()" id="logoutBtn" style="display:none; color: #FFD700;">Logout</button>
     </div>
 </nav>
 
@@ -351,20 +380,20 @@
 <div class="page active" id="page-home">
     <div class="hero">
         <div>
-            <h1>Pakistan ki Best Online Store</h1>
-            <p>Laptops, Mobiles, Accessories — sab kuch ek jagah!</p>
-            <button class="btn btn-white" onclick="showPage('home')">🛍️ Shop Karo</button>
+            <h1>Pakistan's #1 Online Store</h1>
+            <p>Laptops, Mobiles, Accessories — everything in one place!</p>
+            <button class="btn btn-white" onclick="showPage('home')">🛍️ Shop Now</button>
         </div>
         <div class="hero-emoji">🛒</div>
     </div>
 
     <div class="filters">
-        <input type="text" id="searchInput" placeholder="🔍 Product search karein..." oninput="filterProducts()">
+        <input type="text" id="searchInput" placeholder="🔍 Search products..." oninput="filterProducts()">
         <select id="categoryFilter" onchange="filterProducts()">
-            <option value="">Sab Categories</option>
+            <option value="">All Categories</option>
         </select>
         <select id="brandFilter" onchange="filterProducts()">
-            <option value="">Sab Brands</option>
+            <option value="">All Brands</option>
         </select>
         <input type="number" id="minPrice" placeholder="Min Price" oninput="filterProducts()" style="width:120px; flex:none;">
         <input type="number" id="maxPrice" placeholder="Max Price" oninput="filterProducts()" style="width:120px; flex:none;">
@@ -372,13 +401,13 @@
 
     <div class="section-title">✨ Products</div>
     <div class="products-grid" id="productsGrid">
-        <div class="loading"><div class="spinner"></div><br>Products load ho rahe hain...</div>
+        <div class="loading"><div class="spinner"></div><br>Loading products...</div>
     </div>
 </div>
 
 <!-- ===== CART PAGE ===== -->
 <div class="page" id="page-cart">
-    <div class="section-title">🛒 Mera Cart</div>
+    <div class="section-title">🛒 My Cart</div>
     <div id="cartContent">
         <div class="loading"><div class="spinner"></div></div>
     </div>
@@ -386,7 +415,7 @@
 
 <!-- ===== ORDERS PAGE ===== -->
 <div class="page" id="page-orders">
-    <div class="section-title">📦 Mere Orders</div>
+    <div class="section-title">📦 My Orders</div>
     <div class="orders-list" id="ordersContent">
         <div class="loading"><div class="spinner"></div></div>
     </div>
@@ -394,7 +423,7 @@
 
 <!-- ===== WISHLIST PAGE ===== -->
 <div class="page" id="page-wishlist">
-    <div class="section-title">❤️ Meri Wishlist</div>
+    <div class="section-title">❤️ My Wishlist</div>
     <div class="products-grid" id="wishlistContent">
         <div class="loading"><div class="spinner"></div></div>
     </div>
@@ -404,18 +433,18 @@
 <div class="page" id="page-login">
     <div class="auth-container">
         <h2>Welcome Back! 👋</h2>
-        <p>Apne account mein login karein</p>
+        <p>Sign in to your account</p>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" id="loginEmail" placeholder="aapka@email.com">
+            <input type="email" id="loginEmail" placeholder="your@email.com">
         </div>
         <div class="form-group">
             <label>Password</label>
             <input type="password" id="loginPassword" placeholder="••••••••">
         </div>
-        <button class="btn-full" onclick="doLogin()">Login Karein →</button>
+        <button class="btn-full" onclick="doLogin()">Login →</button>
         <div class="auth-switch">
-            Account nahi hai? <a onclick="showPage('register')">Register Karein</a>
+            Don't have an account? <a onclick="showPage('register')">Register</a>
         </div>
     </div>
 </div>
@@ -423,15 +452,15 @@
 <!-- ===== REGISTER PAGE ===== -->
 <div class="page" id="page-register">
     <div class="auth-container">
-        <h2>Account Banayein 🎉</h2>
-        <p>Aaj hi join karein!</p>
+        <h2>Create Account 🎉</h2>
+        <p>Join SwiftCart today!</p>
         <div class="form-group">
-            <label>Pura Naam</label>
+            <label>Full Name</label>
             <input type="text" id="regName" placeholder="Ali Ahmed">
         </div>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" id="regEmail" placeholder="aapka@email.com">
+            <input type="email" id="regEmail" placeholder="your@email.com">
         </div>
         <div class="form-group">
             <label>Password</label>
@@ -441,9 +470,9 @@
             <label>Phone (optional)</label>
             <input type="text" id="regPhone" placeholder="03001234567">
         </div>
-        <button class="btn-full" onclick="doRegister()">Account Banayein →</button>
+        <button class="btn-full" onclick="doRegister()">Create Account →</button>
         <div class="auth-switch">
-            Pehle se account hai? <a onclick="showPage('login')">Login Karein</a>
+            Already have an account? <a onclick="showPage('login')">Login</a>
         </div>
     </div>
 </div>
@@ -459,44 +488,102 @@
 <!-- ===== ADMIN PAGE ===== -->
 <div class="page" id="page-admin">
     <div class="section-title">⚙️ Admin Dashboard</div>
-    <div class="admin-grid" id="adminStats">
-        <div class="loading"><div class="spinner"></div></div>
+
+    <!-- Tab Navigation -->
+    <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('overview')">📊 Overview</button>
+        <button class="admin-tab" onclick="switchAdminTab('products')">📦 Products</button>
+        <button class="admin-tab" onclick="switchAdminTab('orders')">🛒 Orders</button>
+        <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
+        <button class="admin-tab" onclick="switchAdminTab('coupons')">🎟️ Coupons</button>
     </div>
 
-    <!-- Add Product Form -->
-    <div style="background:#fff; border-radius:16px; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:2rem;">
-        <h3 style="margin-bottom:1rem; font-size:1.2rem;">➕ Naya Product Add Karein</h3>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-            <div class="form-group"><label>Product Name</label><input id="ap_name" placeholder="Dell XPS 15"></div>
-            <div class="form-group"><label>Price (PKR)</label><input type="number" id="ap_price" placeholder="150000"></div>
-            <div class="form-group"><label>Stock Quantity</label><input type="number" id="ap_stock" placeholder="10"></div>
-            <div class="form-group"><label>Category</label>
-                <select id="ap_category"><option value="">Select...</option></select>
-            </div>
-            <div class="form-group"><label>Brand</label>
-                <select id="ap_brand"><option value="">Select...</option></select>
-            </div>
-            <div class="form-group"><label>Vendor ID</label><input type="number" id="ap_vendor" placeholder="1" value="1"></div>
+    <!-- OVERVIEW TAB -->
+    <div class="admin-section active" id="admin-overview">
+        <div class="admin-grid" id="adminStats">
+            <div class="loading"><div class="spinner"></div></div>
         </div>
-        <div class="form-group"><label>Description</label><textarea id="ap_desc" placeholder="Product description..."></textarea></div>
-        <button class="btn-full" onclick="addProduct()">Product Add Karein</button>
-    </div>
-
-    <!-- Add Coupon -->
-    <div style="background:#fff; border-radius:16px; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:2rem;">
-        <h3 style="margin-bottom:1rem; font-size:1.2rem;">🎟️ Naya Coupon Add Karein</h3>
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
-            <div class="form-group"><label>Coupon Code</label><input id="cp_code" placeholder="SAVE10"></div>
-            <div class="form-group"><label>Discount %</label><input type="number" id="cp_discount" placeholder="10" min="1" max="100"></div>
-            <div class="form-group"><label>Expiry Date</label><input type="date" id="cp_expiry"></div>
+        <div class="admin-card">
+            <h3>📋 Recent Orders</h3>
+            <div id="adminOrdersOverview"><div class="loading"><div class="spinner"></div></div></div>
         </div>
-        <button class="btn-full" onclick="addCoupon()">Coupon Add Karein</button>
     </div>
 
-    <!-- Recent Orders -->
-    <div style="background:#fff; border-radius:16px; padding:1.5rem; box-shadow:var(--shadow);">
-        <h3 style="margin-bottom:1rem; font-size:1.2rem;">📋 Recent Orders</h3>
-        <div id="adminOrders"><div class="loading"><div class="spinner"></div></div></div>
+    <!-- PRODUCTS TAB -->
+    <div class="admin-section" id="admin-products">
+        <!-- Add Product Form -->
+        <div class="admin-card">
+            <h3>➕ Add New Product</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group"><label>Product Name *</label><input id="ap_name" placeholder="Dell XPS 15"></div>
+                <div class="form-group"><label>Price (PKR) *</label><input type="number" id="ap_price" placeholder="150000"></div>
+                <div class="form-group"><label>Stock Quantity</label><input type="number" id="ap_stock" placeholder="10"></div>
+                <div class="form-group"><label>Category *</label>
+                    <select id="ap_category"><option value="">Select...</option></select>
+                </div>
+                <div class="form-group"><label>Brand</label>
+                    <select id="ap_brand"><option value="">Select...</option></select>
+                </div>
+                <div class="form-group"><label>Vendor ID</label><input type="number" id="ap_vendor" placeholder="1" value="1"></div>
+            </div>
+            <div class="form-group"><label>Description</label><textarea id="ap_desc" placeholder="Product description..."></textarea></div>
+            <button class="btn-full" onclick="addProduct()">➕ Add Product</button>
+        </div>
+
+        <!-- Products List -->
+        <div class="admin-card">
+            <h3>📦 All Products</h3>
+            <div style="margin-bottom:1rem;">
+                <input type="text" id="adminProductSearch" placeholder="🔍 Search products..." oninput="filterAdminProducts()"
+                    style="padding:0.6rem 1rem; border:2px solid var(--border); border-radius:10px; width:100%; outline:none;">
+            </div>
+            <div id="adminProductsList"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div class="admin-section" id="admin-orders">
+        <div class="admin-card">
+            <h3>🛒 All Orders</h3>
+            <div style="display:flex; gap:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+                <select id="orderStatusFilter" onchange="loadAdminOrders()" style="padding:0.6rem 1rem; border:2px solid var(--border); border-radius:10px; outline:none;">
+                    <option value="">All Statuses</option>
+                    <option>Pending</option>
+                    <option>Processing</option>
+                    <option>Shipped</option>
+                    <option>Delivered</option>
+                    <option>Cancelled</option>
+                </select>
+                <input type="text" id="orderCustomerSearch" placeholder="Search by customer..." oninput="filterAdminOrdersTable()"
+                    style="padding:0.6rem 1rem; border:2px solid var(--border); border-radius:10px; outline:none; flex:1; min-width:150px;">
+            </div>
+            <div id="adminOrdersList"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+    </div>
+
+    <!-- CUSTOMERS TAB -->
+    <div class="admin-section" id="admin-customers">
+        <div class="admin-card">
+            <h3>👥 Customer Tracker</h3>
+            <div style="margin-bottom:1rem;">
+                <input type="text" id="customerSearch" placeholder="🔍 Search customers..." oninput="filterCustomers()"
+                    style="padding:0.6rem 1rem; border:2px solid var(--border); border-radius:10px; width:100%; outline:none;">
+            </div>
+            <div id="customerList"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+    </div>
+
+    <!-- COUPONS TAB -->
+    <div class="admin-section" id="admin-coupons">
+        <div class="admin-card">
+            <h3>🎟️ Add New Coupon</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; flex-wrap:wrap;">
+                <div class="form-group"><label>Coupon Code</label><input id="cp_code" placeholder="SAVE10"></div>
+                <div class="form-group"><label>Discount %</label><input type="number" id="cp_discount" placeholder="10" min="1" max="100"></div>
+                <div class="form-group"><label>Expiry Date</label><input type="date" id="cp_expiry"></div>
+            </div>
+            <button class="btn-full" onclick="addCoupon()">Add Coupon</button>
+        </div>
     </div>
 </div>
 
@@ -512,19 +599,120 @@
 <div class="modal-overlay" id="paymentModal">
     <div class="modal">
         <button class="modal-close" onclick="document.getElementById('paymentModal').classList.remove('open')">✕</button>
-        <h2>💳 Payment Karein</h2>
-        <div class="form-group" style="margin-top:1rem;">
+        <h2>💳 Complete Payment</h2>
+        <p style="color:var(--text-light); margin-bottom:1rem;">Order amount: <strong id="payAmount" style="color:var(--primary)"></strong></p>
+
+        <div class="form-group">
             <label>Payment Method</label>
-            <select id="payMethod">
-                <option value="Cash on Delivery">Cash on Delivery</option>
-                <option value="EasyPaisa">EasyPaisa</option>
-                <option value="JazzCash">JazzCash</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Credit Card">Credit Card</option>
+            <select id="payMethod" onchange="handlePaymentMethodChange()">
+                <option value="Cash on Delivery">💵 Cash on Delivery</option>
+                <option value="EasyPaisa">📱 EasyPaisa</option>
+                <option value="JazzCash">📱 JazzCash</option>
+                <option value="Bank Transfer">🏦 Bank Transfer</option>
+                <option value="Credit Card">💳 Credit Card</option>
             </select>
         </div>
-        <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:1rem;">Order amount: <strong id="payAmount" style="color:var(--primary)"></strong></p>
-        <button class="btn-full" onclick="confirmPayment()">Payment Complete Karein ✓</button>
+
+        <!-- COD Info -->
+        <div id="payInfo_cod" class="payment-info-fields">
+            <div class="field-title">💵 Cash on Delivery</div>
+            <p style="font-size:0.9rem; color:var(--text-light);">Pay in cash when your order arrives at your doorstep. No extra charges.</p>
+            <div class="form-group" style="margin-top:0.75rem; margin-bottom:0;">
+                <label>Delivery Address *</label>
+                <textarea id="cod_address" placeholder="House No, Street, Area, City" style="height:80px;"></textarea>
+            </div>
+        </div>
+
+        <!-- EasyPaisa Info -->
+        <div id="payInfo_easypaisa" class="payment-info-fields" style="display:none;">
+            <div class="field-title">📱 EasyPaisa Payment</div>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:0.75rem;">Send payment to our EasyPaisa account: <strong>0300-1234567</strong> (SwiftCart)</p>
+            <div class="form-group">
+                <label>Your EasyPaisa Number *</label>
+                <input type="tel" id="ep_number" placeholder="03001234567">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Transaction ID *</label>
+                <input type="text" id="ep_txn" placeholder="EP-XXXXXXXX">
+            </div>
+        </div>
+
+        <!-- JazzCash Info -->
+        <div id="payInfo_jazzcash" class="payment-info-fields" style="display:none;">
+            <div class="field-title">📱 JazzCash Payment</div>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:0.75rem;">Send payment to our JazzCash account: <strong>0311-9876543</strong> (SwiftCart)</p>
+            <div class="form-group">
+                <label>Your JazzCash Number *</label>
+                <input type="tel" id="jc_number" placeholder="03119876543">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Transaction ID *</label>
+                <input type="text" id="jc_txn" placeholder="JC-XXXXXXXX">
+            </div>
+        </div>
+
+        <!-- Bank Transfer Info -->
+        <div id="payInfo_bank" class="payment-info-fields" style="display:none;">
+            <div class="field-title">🏦 Bank Transfer Details</div>
+            <div style="background:#fff; border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; font-size:0.85rem;">
+                <div><strong>Bank:</strong> HBL</div>
+                <div><strong>Account Title:</strong> SwiftCart Pvt Ltd</div>
+                <div><strong>Account No:</strong> 0123-4567890-001</div>
+                <div><strong>IBAN:</strong> PK38HABB0000012345678901</div>
+            </div>
+            <div class="form-group">
+                <label>Sender Name *</label>
+                <input type="text" id="bank_name" placeholder="Your full name">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Transaction / Reference Number *</label>
+                <input type="text" id="bank_txn" placeholder="e.g. FT2025XXXXXXXX">
+            </div>
+        </div>
+
+        <!-- Credit Card Info -->
+        <div id="payInfo_card" class="payment-info-fields" style="display:none;">
+            <div class="field-title">💳 Credit / Debit Card</div>
+            <div class="form-group">
+                <label>Cardholder Name *</label>
+                <input type="text" id="card_name" placeholder="As printed on card">
+            </div>
+            <div class="form-group">
+                <label>Card Number *</label>
+                <input type="text" id="card_number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCardNumber(this)">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Expiry Date *</label>
+                    <input type="text" id="card_expiry" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>CVV *</label>
+                    <input type="text" id="card_cvv" placeholder="3 digits" maxlength="4">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-full" style="margin-top:1.5rem;" onclick="confirmPayment()">✅ Confirm Payment</button>
+    </div>
+</div>
+
+<!-- ===== EDIT PRODUCT MODAL ===== -->
+<div class="modal-overlay" id="editProductModal">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('editProductModal').classList.remove('open')">✕</button>
+        <h2>✏️ Edit Product</h2>
+        <input type="hidden" id="edit_pid">
+        <div class="edit-modal-grid">
+            <div class="form-group"><label>Product Name *</label><input id="edit_name" placeholder="Product name"></div>
+            <div class="form-group"><label>Price (PKR) *</label><input type="number" id="edit_price" placeholder="150000"></div>
+            <div class="form-group"><label>Stock Quantity</label><input type="number" id="edit_stock" placeholder="10"></div>
+            <div class="form-group"><label>Category</label>
+                <select id="edit_category"><option value="">Select...</option></select>
+            </div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="edit_desc" placeholder="Product description..."></textarea></div>
+        <button class="btn-full" onclick="saveEditProduct()">💾 Save Changes</button>
     </div>
 </div>
 
@@ -536,9 +724,12 @@
 // CONFIGURATION
 // =============================================
 const API = 'https://swiftcart-xvdw.onrender.com/api';
-let authToken = localStorage.getItem('token');
-let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+let authToken = localStorage.getItem('swiftcart_token');
+let currentUser = JSON.parse(localStorage.getItem('swiftcart_user') || 'null');
 let allProducts = [];
+let allAdminProducts = [];
+let allAdminOrders = [];
+let allCustomers = [];
 let pendingOrderId = null;
 let pendingOrderAmount = 0;
 
@@ -559,7 +750,7 @@ function apiCall(endpoint, method = 'GET', body = null) {
     };
     if (authToken) opts.headers['Authorization'] = `Bearer ${authToken}`;
     if (body) opts.body = JSON.stringify(body);
-    return fetch(API + endpoint, opts).then(r => r.json());
+    return fetch(API + endpoint, opts).then(r => r.json()).catch(() => ({ success: false, message: 'Server connection failed.' }));
 }
 
 function formatPKR(amount) {
@@ -567,8 +758,13 @@ function formatPKR(amount) {
 }
 
 function getCategoryEmoji(cat) {
-    const map = { 'Laptops': '💻', 'Mobiles': '📱', 'Accessories': '🎧' };
+    const map = { 'Laptops': '💻', 'Mobiles': '📱', 'Accessories': '🎧', 'Headphones': '🎧', 'Speakers': '🔊', 'Airbuds': '🎵', 'Tablets': '📟', 'TVs': '📺', 'Cameras': '📷' };
     return map[cat] || '📦';
+}
+
+function formatCardNumber(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
 }
 
 // =============================================
@@ -577,6 +773,7 @@ function getCategoryEmoji(cat) {
 function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
+    window.scrollTo(0, 0);
 
     if (page === 'home') loadProducts();
     if (page === 'cart') loadCart();
@@ -596,105 +793,185 @@ function updateNavForAuth() {
     document.getElementById('profileBtn').style.display = loggedIn ? '' : 'none';
     document.getElementById('ordersBtn').style.display = loggedIn ? '' : 'none';
     document.getElementById('wishlistBtn').style.display = loggedIn ? '' : 'none';
-    if (currentUser && currentUser.roleId === 1) {
-        document.getElementById('adminBtn').style.display = '';
-    }
+    document.getElementById('adminBtn').style.display = (currentUser && currentUser.roleId === 1) ? '' : 'none';
 }
 
 async function doLogin() {
-    const email = document.getElementById('loginEmail').value;
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-    if (!email || !password) { showToast('Email aur password zarori hai!', 'error'); return; }
+    if (!email || !password) { showToast('Email and password are required!', 'error'); return; }
 
     const data = await apiCall('/auth/login', 'POST', { email, password });
     if (data.success) {
         authToken = data.token;
         currentUser = data.user;
-        localStorage.setItem('token', authToken);
-        localStorage.setItem('user', JSON.stringify(currentUser));
+        localStorage.setItem('swiftcart_token', authToken);
+        localStorage.setItem('swiftcart_user', JSON.stringify(currentUser));
         updateNavForAuth();
         showToast(`Welcome, ${currentUser.name}! 🎉`);
         showPage('home');
     } else {
-        showToast(data.message, 'error');
+        showToast(data.message || 'Login failed', 'error');
     }
 }
 
 async function doRegister() {
-    const fullName = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
+    const fullName = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
-    const phone = document.getElementById('regPhone').value;
+    const phone = document.getElementById('regPhone').value.trim();
+
+    if (!fullName || !email || !password) { showToast('Name, email and password are required!', 'error'); return; }
 
     const data = await apiCall('/auth/register', 'POST', { fullName, email, password, phone });
     if (data.success) {
-        showToast('Account ban gaya! Login karein 🎉');
+        showToast('Account created! Please login 🎉');
         showPage('login');
     } else {
-        showToast(data.message, 'error');
+        showToast(data.message || 'Registration failed', 'error');
     }
 }
 
 function logout() {
     authToken = null;
     currentUser = null;
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('swiftcart_token');
+    localStorage.removeItem('swiftcart_user');
     updateNavForAuth();
-    showToast('Logout ho gaye!');
+    showToast('Logged out successfully!');
     showPage('home');
 }
 
 // =============================================
+// DEMO PRODUCTS (local data — no backend needed)
+// =============================================
+const DEMO_PRODUCTS = [
+    {
+        ProductID: 1,
+        ProductName: 'Samsung Galaxy S24',
+        CategoryName: 'Mobiles',
+        BrandName: 'Samsung',
+        Price: 149999,
+        StockQuantity: 20,
+        Description: 'Latest Samsung flagship with 200MP camera, Snapdragon 8 Gen 3, 6.2" Dynamic AMOLED display, 5000mAh battery and 45W fast charging.',
+        AvgRating: 4.7,
+        ReviewCount: 128,
+        VendorName: 'SwiftCart Official',
+        reviews: [
+            { FullName: 'Ali Hassan', Rating: 5, Comment: 'Absolutely amazing phone! Camera quality is top notch.' },
+            { FullName: 'Sara Khan', Rating: 4, Comment: 'Great performance, battery could be better though.' }
+        ]
+    },
+    {
+        ProductID: 2,
+        ProductName: 'Dell XPS 15',
+        CategoryName: 'Laptops',
+        BrandName: 'Dell',
+        Price: 389999,
+        StockQuantity: 8,
+        Description: 'Professional laptop with Intel Core i9, 32GB DDR5 RAM, 1TB NVMe SSD, 15.6" 4K OLED touchscreen and NVIDIA RTX 4070 graphics.',
+        AvgRating: 4.8,
+        ReviewCount: 74,
+        VendorName: 'SwiftCart Official',
+        reviews: [
+            { FullName: 'Usman Tariq', Rating: 5, Comment: 'Best laptop I have ever used. Worth every rupee!' },
+            { FullName: 'Fatima Malik', Rating: 5, Comment: 'Display is stunning, performance is flawless.' }
+        ]
+    },
+    {
+        ProductID: 3,
+        ProductName: 'Sony WH-1000XM5',
+        CategoryName: 'Headphones',
+        BrandName: 'Sony',
+        Price: 89999,
+        StockQuantity: 15,
+        Description: 'Industry-leading noise cancelling headphones with 30-hour battery, Multipoint connection, crystal-clear call quality and foldable design.',
+        AvgRating: 4.9,
+        ReviewCount: 210,
+        VendorName: 'SwiftCart Official',
+        reviews: [
+            { FullName: 'Zara Ahmed', Rating: 5, Comment: 'Noise cancellation is absolutely incredible!' },
+            { FullName: 'Hamza Raza', Rating: 5, Comment: 'Best headphones under 100K, no doubt.' }
+        ]
+    },
+    {
+        ProductID: 4,
+        ProductName: 'JBL Charge 5',
+        CategoryName: 'Speakers',
+        BrandName: 'JBL',
+        Price: 34999,
+        StockQuantity: 3,
+        Description: 'Portable Bluetooth speaker with powerful JBL Pro Sound, built-in power bank, IP67 waterproof & dustproof, 20-hour playtime.',
+        AvgRating: 4.5,
+        ReviewCount: 95,
+        VendorName: 'SwiftCart Official',
+        reviews: [
+            { FullName: 'Bilal Sheikh', Rating: 4, Comment: 'Great bass and loud volume. Perfect for outdoor use.' },
+            { FullName: 'Maryam Ali', Rating: 5, Comment: 'Waterproof feature saved it at the beach! Love it.' }
+        ]
+    },
+    {
+        ProductID: 5,
+        ProductName: 'Apple AirPods Pro 2',
+        CategoryName: 'Airbuds',
+        BrandName: 'Apple',
+        Price: 74999,
+        StockQuantity: 12,
+        Description: 'Next-level Active Noise Cancellation, Adaptive Transparency, Personalized Spatial Audio, H2 chip, 6hrs battery + 24hrs with case.',
+        AvgRating: 4.8,
+        ReviewCount: 183,
+        VendorName: 'SwiftCart Official',
+        reviews: [
+            { FullName: 'Ayesha Noor', Rating: 5, Comment: 'ANC is unreal. Totally worth the price.' },
+            { FullName: 'Omar Farooq', Rating: 5, Comment: 'Fit perfectly and the sound quality is exceptional.' }
+        ]
+    }
+];
+
+const DEMO_CATEGORIES = ['Mobiles', 'Laptops', 'Headphones', 'Speakers', 'Airbuds'];
+const DEMO_BRANDS = ['Samsung', 'Dell', 'Sony', 'JBL', 'Apple'];
+
+// =============================================
 // PRODUCTS
 // =============================================
-async function loadProducts() {
+function loadProducts() {
     const grid = document.getElementById('productsGrid');
     grid.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading...</div>';
 
-    // Load categories and brands for filters
-    const [cats, brands] = await Promise.all([
-        apiCall('/products/meta/categories'),
-        apiCall('/products/meta/brands')
-    ]);
+    // Populate category filter
+    const catSel = document.getElementById('categoryFilter');
+    catSel.innerHTML = '<option value="">All Categories</option>';
+    DEMO_CATEGORIES.forEach(c => catSel.innerHTML += `<option value="${c}">${c}</option>`);
 
-    if (cats.success) {
-        const catSel = document.getElementById('categoryFilter');
-        catSel.innerHTML = '<option value="">Sab Categories</option>';
-        cats.categories.forEach(c => {
-            catSel.innerHTML += `<option value="${c.CategoryName}">${c.CategoryName}</option>`;
-        });
-        const apCat = document.getElementById('ap_category');
-        if (apCat) {
-            apCat.innerHTML = '<option value="">Select...</option>';
-            cats.categories.forEach(c => apCat.innerHTML += `<option value="${c.CategoryID}">${c.CategoryName}</option>`);
+    // Populate brand filter
+    const bSel = document.getElementById('brandFilter');
+    bSel.innerHTML = '<option value="">All Brands</option>';
+    DEMO_BRANDS.forEach(b => bSel.innerHTML += `<option value="${b}">${b}</option>`);
+
+    // Populate admin dropdowns
+    ['ap_category', 'edit_category'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = '<option value="">Select...</option>';
+            DEMO_CATEGORIES.forEach((c, i) => el.innerHTML += `<option value="${i+1}">${c}</option>`);
         }
+    });
+    const apBrand = document.getElementById('ap_brand');
+    if (apBrand) {
+        apBrand.innerHTML = '<option value="">Select...</option>';
+        DEMO_BRANDS.forEach((b, i) => apBrand.innerHTML += `<option value="${i+1}">${b}</option>`);
     }
 
-    if (brands.success) {
-        const bSel = document.getElementById('brandFilter');
-        bSel.innerHTML = '<option value="">Sab Brands</option>';
-        brands.brands.forEach(b => bSel.innerHTML += `<option value="${b.BrandName}">${b.BrandName}</option>`);
-        const apBrand = document.getElementById('ap_brand');
-        if (apBrand) {
-            apBrand.innerHTML = '<option value="">Select...</option>';
-            brands.brands.forEach(b => apBrand.innerHTML += `<option value="${b.BrandID}">${b.BrandName}</option>`);
-        }
-    }
-
-    const data = await apiCall('/products');
-    if (data.success) {
-        allProducts = data.products;
-        renderProducts(allProducts);
-    } else {
-        grid.innerHTML = '<div class="loading">Products nahi mile ❌</div>';
-    }
+    allProducts = [...DEMO_PRODUCTS];
+    renderProducts(allProducts);
 }
+
+// Category/Brand dropdowns populated via DEMO data in loadProducts()
 
 function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
-    if (products.length === 0) {
-        grid.innerHTML = '<div class="loading">Koi product nahi mila 😢</div>';
+    if (!products || products.length === 0) {
+        grid.innerHTML = '<div class="loading">No products found 😢</div>';
         return;
     }
     grid.innerHTML = products.map(p => `
@@ -710,12 +987,8 @@ function renderProducts(products) {
                 </div>
             </div>
             <div class="card-actions">
-                <button class="btn-sm btn-add-cart" onclick="event.stopPropagation(); addToCart(${p.ProductID})">
-                    🛒 Cart
-                </button>
-                <button class="btn-sm btn-wishlist" onclick="event.stopPropagation(); addToWishlist(${p.ProductID})">
-                    ❤️
-                </button>
+                <button class="btn-sm btn-add-cart" onclick="event.stopPropagation(); addToCart(${p.ProductID})">🛒 Cart</button>
+                <button class="btn-sm btn-wishlist" onclick="event.stopPropagation(); addToWishlist(${p.ProductID})">❤️</button>
             </div>
         </div>
     `).join('');
@@ -737,45 +1010,42 @@ function filterProducts() {
     renderProducts(filtered);
 }
 
-async function openProductModal(productId) {
+function openProductModal(productId) {
     const modal = document.getElementById('productModal');
     const content = document.getElementById('modalContent');
-    content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
     modal.classList.add('open');
 
-    const data = await apiCall(`/products/${productId}`);
-    if (data.success) {
-        const p = data.product;
-        const stars = '★'.repeat(Math.round(p.AvgRating || 0)) + '☆'.repeat(5 - Math.round(p.AvgRating || 0));
-        content.innerHTML = `
-            <div class="product-detail-img">${getCategoryEmoji(p.CategoryName)}</div>
-            <h2 style="margin-top:1rem">${p.ProductName}</h2>
-            <div class="product-meta">
-                <div class="meta-item"><div class="label">Category</div><div class="value">${p.CategoryName}</div></div>
-                <div class="meta-item"><div class="label">Brand</div><div class="value">${p.BrandName}</div></div>
-                <div class="meta-item"><div class="label">Price</div><div class="value" style="color:var(--primary)">${formatPKR(p.Price)}</div></div>
-                <div class="meta-item"><div class="label">Stock</div><div class="value">${p.StockQuantity} units</div></div>
-                <div class="meta-item"><div class="label">Rating</div><div class="value"><span class="stars">${stars}</span> (${p.ReviewCount || 0})</div></div>
-                <div class="meta-item"><div class="label">Vendor</div><div class="value">${p.VendorName}</div></div>
-            </div>
-            <p style="color:var(--text-light); margin-bottom:1rem">${p.Description || 'Koi description nahi.'}</p>
-            ${data.variants.length ? `<div style="margin-bottom:1rem"><strong>Variants:</strong> ${data.variants.map(v => `${v.Color || ''} ${v.StorageSize || ''} (+${formatPKR(v.ExtraPrice || 0)})`).join(', ')}</div>` : ''}
-            <div style="display:flex; gap:1rem; margin-bottom:1.5rem">
-                <button class="btn btn-add-cart btn-sm" style="flex:1; padding:0.75rem" onclick="addToCart(${p.ProductID}); closeModal()">🛒 Cart Mein Add Karein</button>
-                <button class="btn btn-wishlist btn-sm" style="flex:0; padding:0.75rem 1rem" onclick="addToWishlist(${p.ProductID})">❤️</button>
-            </div>
-            ${data.reviews.length ? `
-                <h3 style="margin-bottom:0.75rem">Reviews (${data.reviews.length})</h3>
-                ${data.reviews.slice(0,3).map(r => `
-                    <div style="padding:0.75rem; background:var(--bg); border-radius:10px; margin-bottom:0.5rem">
-                        <strong>${r.FullName}</strong> 
-                        <span class="stars" style="font-size:0.9rem">${'★'.repeat(r.Rating)}</span>
-                        <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.25rem">${r.Comment}</p>
-                    </div>
-                `).join('')}
-            ` : '<p style="color:var(--text-light)">Abhi koi review nahi hai.</p>'}
-        `;
-    }
+    const p = DEMO_PRODUCTS.find(x => x.ProductID === productId);
+    if (!p) { content.innerHTML = '<div class="loading">Product not found.</div>'; return; }
+
+    const stars = '★'.repeat(Math.round(p.AvgRating || 0)) + '☆'.repeat(5 - Math.round(p.AvgRating || 0));
+    content.innerHTML = `
+        <div class="product-detail-img">${getCategoryEmoji(p.CategoryName)}</div>
+        <h2 style="margin-top:1rem">${p.ProductName}</h2>
+        <div class="product-meta">
+            <div class="meta-item"><div class="label">Category</div><div class="value">${p.CategoryName}</div></div>
+            <div class="meta-item"><div class="label">Brand</div><div class="value">${p.BrandName}</div></div>
+            <div class="meta-item"><div class="label">Price</div><div class="value" style="color:var(--primary)">${formatPKR(p.Price)}</div></div>
+            <div class="meta-item"><div class="label">Stock</div><div class="value">${p.StockQuantity} units</div></div>
+            <div class="meta-item"><div class="label">Rating</div><div class="value"><span class="stars">${stars}</span> (${p.ReviewCount || 0})</div></div>
+            <div class="meta-item"><div class="label">Vendor</div><div class="value">${p.VendorName || 'N/A'}</div></div>
+        </div>
+        <p style="color:var(--text-light); margin-bottom:1rem">${p.Description || 'No description available.'}</p>
+        <div style="display:flex; gap:1rem; margin-bottom:1.5rem">
+            <button class="btn btn-add-cart btn-sm" style="flex:1; padding:0.75rem" onclick="addToCart(${p.ProductID}); closeModal()">🛒 Add to Cart</button>
+            <button class="btn btn-wishlist btn-sm" style="flex:0; padding:0.75rem 1rem" onclick="addToWishlist(${p.ProductID})">❤️</button>
+        </div>
+        ${p.reviews && p.reviews.length ? `
+            <h3 style="margin-bottom:0.75rem">Reviews (${p.reviews.length})</h3>
+            ${p.reviews.slice(0,3).map(r => `
+                <div style="padding:0.75rem; background:var(--bg); border-radius:10px; margin-bottom:0.5rem">
+                    <strong>${r.FullName}</strong>
+                    <span class="stars" style="font-size:0.9rem">${'★'.repeat(r.Rating)}</span>
+                    <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.25rem">${r.Comment}</p>
+                </div>
+            `).join('')}
+        ` : '<p style="color:var(--text-light)">No reviews yet.</p>'}
+    `;
 }
 
 function closeModal() {
@@ -794,7 +1064,7 @@ async function loadCart() {
     updateCartBadge(data.cart ? data.cart.length : 0);
 
     if (!data.cart || data.cart.length === 0) {
-        content.innerHTML = `<div class="loading" style="font-size:3rem">🛒<br><span style="font-size:1rem">Cart khali hai. Products dekho!</span><br><button class="btn btn-add-cart" style="margin-top:1rem; padding:0.75rem 1.5rem; border-radius:10px" onclick="showPage('home')">🏠 Home Jao</button></div>`;
+        content.innerHTML = `<div class="loading" style="font-size:3rem">🛒<br><span style="font-size:1rem">Your cart is empty. Start shopping!</span><br><button class="btn btn-add-cart" style="margin-top:1rem; padding:0.75rem 1.5rem; border-radius:10px" onclick="showPage('home')">🏠 Browse Products</button></div>`;
         return;
     }
 
@@ -821,25 +1091,25 @@ async function loadCart() {
             <div class="coupon-row">
                 <input id="couponInput" placeholder="🎟️ Coupon code...">
             </div>
-            <button class="btn btn-add-cart" onclick="placeOrder()" style="padding:0.75rem 2rem; border-radius:10px; font-size:1rem">🚀 Order Place Karein</button>
+            <button class="btn btn-add-cart" onclick="placeOrder()" style="padding:0.75rem 2rem; border-radius:10px; font-size:1rem">🚀 Place Order</button>
         </div>
     `;
 }
 
 async function addToCart(productId) {
-    if (!currentUser) { showToast('Pehle login karein!', 'error'); showPage('login'); return; }
+    if (!currentUser) { showToast('Please login first!', 'error'); showPage('login'); return; }
     const data = await apiCall('/cart/add', 'POST', { productId, quantity: 1 });
     if (data.success) {
-        showToast('Cart mein add ho gaya! 🛒');
+        showToast('Added to cart! 🛒');
         updateCartBadge();
     } else {
-        showToast(data.message, 'error');
+        showToast(data.message || 'Failed to add to cart', 'error');
     }
 }
 
 async function removeFromCart(cartId) {
     const data = await apiCall(`/cart/${cartId}`, 'DELETE');
-    if (data.success) { showToast('Remove ho gaya!'); loadCart(); }
+    if (data.success) { showToast('Removed from cart!'); loadCart(); }
 }
 
 async function updateCartBadge(count = null) {
@@ -862,34 +1132,78 @@ async function placeOrder() {
 
     const data = await apiCall('/orders/place', 'POST', { couponCode: couponCode || undefined });
     if (data.success) {
-        showToast(`Order place ho gaya! #${data.orderId} 🎉`);
         pendingOrderId = data.orderId;
-        pendingOrderAmount = 0;
 
-        // Get order amount for payment
         const orderData = await apiCall(`/orders/${data.orderId}`);
         if (orderData.success) {
             pendingOrderAmount = orderData.order.TotalAmount;
             document.getElementById('payAmount').textContent = formatPKR(pendingOrderAmount);
-            document.getElementById('paymentModal').classList.add('open');
         }
+
+        // Reset payment form
+        document.getElementById('payMethod').value = 'Cash on Delivery';
+        handlePaymentMethodChange();
+        document.getElementById('paymentModal').classList.add('open');
         updateCartBadge(0);
     } else {
-        showToast(data.message, 'error');
+        showToast(data.message || 'Failed to place order', 'error');
     }
+}
+
+// Payment method toggle
+function handlePaymentMethodChange() {
+    const method = document.getElementById('payMethod').value;
+    document.getElementById('payInfo_cod').style.display = 'none';
+    document.getElementById('payInfo_easypaisa').style.display = 'none';
+    document.getElementById('payInfo_jazzcash').style.display = 'none';
+    document.getElementById('payInfo_bank').style.display = 'none';
+    document.getElementById('payInfo_card').style.display = 'none';
+
+    if (method === 'Cash on Delivery') document.getElementById('payInfo_cod').style.display = 'block';
+    else if (method === 'EasyPaisa') document.getElementById('payInfo_easypaisa').style.display = 'block';
+    else if (method === 'JazzCash') document.getElementById('payInfo_jazzcash').style.display = 'block';
+    else if (method === 'Bank Transfer') document.getElementById('payInfo_bank').style.display = 'block';
+    else if (method === 'Credit Card') document.getElementById('payInfo_card').style.display = 'block';
+}
+
+function validatePaymentInfo() {
+    const method = document.getElementById('payMethod').value;
+    if (method === 'Cash on Delivery') {
+        const addr = document.getElementById('cod_address').value.trim();
+        if (!addr) { showToast('Please enter your delivery address!', 'error'); return false; }
+    } else if (method === 'EasyPaisa') {
+        if (!document.getElementById('ep_number').value.trim()) { showToast('Please enter your EasyPaisa number!', 'error'); return false; }
+        if (!document.getElementById('ep_txn').value.trim()) { showToast('Please enter the Transaction ID!', 'error'); return false; }
+    } else if (method === 'JazzCash') {
+        if (!document.getElementById('jc_number').value.trim()) { showToast('Please enter your JazzCash number!', 'error'); return false; }
+        if (!document.getElementById('jc_txn').value.trim()) { showToast('Please enter the Transaction ID!', 'error'); return false; }
+    } else if (method === 'Bank Transfer') {
+        if (!document.getElementById('bank_name').value.trim()) { showToast('Please enter sender name!', 'error'); return false; }
+        if (!document.getElementById('bank_txn').value.trim()) { showToast('Please enter the Transaction/Reference number!', 'error'); return false; }
+    } else if (method === 'Credit Card') {
+        if (!document.getElementById('card_name').value.trim()) { showToast('Please enter cardholder name!', 'error'); return false; }
+        const cardNum = document.getElementById('card_number').value.replace(/\s/g, '');
+        if (cardNum.length !== 16) { showToast('Please enter a valid 16-digit card number!', 'error'); return false; }
+        if (!document.getElementById('card_expiry').value.trim()) { showToast('Please enter card expiry date!', 'error'); return false; }
+        const cvv = document.getElementById('card_cvv').value.trim();
+        if (cvv.length < 3) { showToast('Please enter a valid CVV!', 'error'); return false; }
+    }
+    return true;
 }
 
 async function confirmPayment() {
     if (!pendingOrderId) return;
+    if (!validatePaymentInfo()) return;
+
     const payMethod = document.getElementById('payMethod').value;
     const data = await apiCall('/payments', 'POST', { orderId: pendingOrderId, paymentMethod: payMethod });
 
     if (data.success) {
         document.getElementById('paymentModal').classList.remove('open');
-        showToast(`Payment complete! Transaction: ${data.transactionId} ✅`);
+        showToast(`Payment confirmed! Transaction: ${data.transactionId} ✅`);
         showPage('orders');
     } else {
-        showToast(data.message, 'error');
+        showToast(data.message || 'Payment failed', 'error');
     }
 }
 
@@ -900,7 +1214,7 @@ async function loadOrders() {
 
     const data = await apiCall('/orders/my');
     if (!data.orders || data.orders.length === 0) {
-        content.innerHTML = '<div class="loading">Abhi koi order nahi 📦</div>';
+        content.innerHTML = '<div class="loading">No orders yet 📦</div>';
         return;
     }
 
@@ -908,23 +1222,25 @@ async function loadOrders() {
         <div class="order-card">
             <div>
                 <div style="font-weight:700; font-size:1rem">Order #${o.OrderID}</div>
-                <div style="color:var(--text-light); font-size:0.85rem">${new Date(o.OrderDate).toLocaleDateString('ur-PK')} | ${o.ItemCount} items</div>
-                ${o.TrackingNumber ? `<div style="font-size:0.8rem; color:var(--primary); margin-top:0.25rem">📦 ${o.TrackingNumber}</div>` : ''}
+                <div style="color:var(--text-light); font-size:0.85rem">${new Date(o.OrderDate).toLocaleDateString('en-PK')} | ${o.ItemCount} items</div>
+                ${o.TrackingNumber ? `<div style="font-size:0.8rem; color:var(--primary); margin-top:0.25rem">📦 Tracking: ${o.TrackingNumber}</div>` : ''}
             </div>
             <div style="text-align:center">
                 <div style="font-size:1.2rem; font-weight:800; color:var(--primary)">${formatPKR(o.TotalAmount)}</div>
             </div>
-            <span class="order-status status-${o.OrderStatus}">${o.OrderStatus}</span>
-            ${o.OrderStatus === 'Delivered' ? `<button onclick="returnOrder(${o.OrderID})" style="background:var(--danger); color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:8px; cursor:pointer; font-size:0.85rem">Return</button>` : ''}
+            <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                <span class="order-status status-${o.OrderStatus}">${o.OrderStatus}</span>
+                ${o.OrderStatus === 'Delivered' ? `<button onclick="returnOrder(${o.OrderID})" style="background:var(--danger); color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:8px; cursor:pointer; font-size:0.85rem">↩ Return</button>` : ''}
+            </div>
         </div>
     `).join('');
 }
 
 async function returnOrder(orderId) {
-    const reason = prompt('Return ka reason batayein:');
+    const reason = prompt('Please enter the reason for return:');
     if (!reason) return;
     const data = await apiCall(`/orders/${orderId}/return`, 'POST', { reason });
-    showToast(data.success ? 'Return request submit ho gaya!' : data.message, data.success ? 'success' : 'error');
+    showToast(data.success ? 'Return request submitted!' : data.message, data.success ? 'success' : 'error');
     if (data.success) loadOrders();
 }
 
@@ -937,7 +1253,7 @@ async function loadWishlist() {
     const data = await apiCall('/wishlist');
 
     if (!data.wishlist || data.wishlist.length === 0) {
-        content.innerHTML = '<div class="loading" style="grid-column:1/-1">Wishlist khali hai ❤️</div>';
+        content.innerHTML = '<div class="loading" style="grid-column:1/-1">Your wishlist is empty ❤️</div>';
         return;
     }
 
@@ -957,9 +1273,9 @@ async function loadWishlist() {
 }
 
 async function addToWishlist(productId) {
-    if (!currentUser) { showToast('Pehle login karein!', 'error'); showPage('login'); return; }
+    if (!currentUser) { showToast('Please login first!', 'error'); showPage('login'); return; }
     const data = await apiCall('/wishlist/add', 'POST', { productId });
-    showToast(data.success ? '❤️ Wishlist mein add!' : data.message, data.success ? 'success' : 'error');
+    showToast(data.success ? '❤️ Added to wishlist!' : data.message, data.success ? 'success' : 'error');
 }
 
 async function removeWishlist(id) {
@@ -985,7 +1301,7 @@ async function loadProfile() {
                 <div class="meta-item"><div class="label">Role</div><div class="value">${u.RoleName}</div></div>
                 <div class="meta-item"><div class="label">Member Since</div><div class="value">${new Date(u.CreatedAt).toLocaleDateString()}</div></div>
             </div>
-            <button onclick="showPage('orders')" class="btn-full" style="margin-top:1rem">📦 Mere Orders Dekhein</button>
+            <button onclick="showPage('orders')" class="btn-full" style="margin-top:1rem">📦 View My Orders</button>
         `;
     }
 }
@@ -993,8 +1309,20 @@ async function loadProfile() {
 // =============================================
 // ADMIN
 // =============================================
+function switchAdminTab(tab) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+
+    event.target.classList.add('active');
+    document.getElementById('admin-' + tab).classList.add('active');
+
+    if (tab === 'orders') loadAdminOrders();
+    if (tab === 'customers') loadCustomers();
+    if (tab === 'products') loadAdminProducts();
+}
+
 async function loadAdmin() {
-    if (!currentUser || currentUser.roleId !== 1) { showToast('Admin access nahi hai!', 'error'); showPage('home'); return; }
+    if (!currentUser || currentUser.roleId !== 1) { showToast('Admin access denied!', 'error'); showPage('home'); return; }
 
     // Load stats
     const stats = await apiCall('/admin/stats');
@@ -1009,9 +1337,10 @@ async function loadAdmin() {
             <div class="stat-card"><div class="stat-icon">↩️</div><div class="stat-value">${s.PendingReturns}</div><div class="stat-label">Pending Returns</div></div>
         `;
 
-        if (stats.recentOrders.length > 0) {
-            document.getElementById('adminOrders').innerHTML = `
-                <table class="cart-table">
+        if (stats.recentOrders && stats.recentOrders.length > 0) {
+            document.getElementById('adminOrdersOverview').innerHTML = `
+                <div style="overflow-x:auto;">
+                <table class="data-table">
                     <thead><tr><th>#</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
                     <tbody>
                         ${stats.recentOrders.map(o => `
@@ -1022,7 +1351,7 @@ async function loadAdmin() {
                                 <td><span class="order-status status-${o.OrderStatus}">${o.OrderStatus}</span></td>
                                 <td>${new Date(o.OrderDate).toLocaleDateString()}</td>
                                 <td>
-                                    <select onchange="updateOrderStatus(${o.OrderID}, this.value)" style="padding:0.3rem; border-radius:6px; border:1px solid var(--border)">
+                                    <select onchange="updateOrderStatus(${o.OrderID}, this.value)" style="padding:0.3rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">
                                         ${['Pending','Processing','Shipped','Delivered','Cancelled'].map(s => `<option ${s === o.OrderStatus ? 'selected' : ''}>${s}</option>`).join('')}
                                     </select>
                                 </td>
@@ -1030,57 +1359,295 @@ async function loadAdmin() {
                         `).join('')}
                     </tbody>
                 </table>
+                </div>
             `;
         }
     }
 
-    // Load categories and brands for add product form
-    loadProducts(); // This fills the dropdowns
+    loadProducts(); // fills category/brand dropdowns
 }
 
-async function addProduct() {
-    const body = {
-        productName: document.getElementById('ap_name').value,
-        description: document.getElementById('ap_desc').value,
-        price: parseFloat(document.getElementById('ap_price').value),
-        stockQuantity: parseInt(document.getElementById('ap_stock').value),
-        categoryId: parseInt(document.getElementById('ap_category').value),
-        brandId: parseInt(document.getElementById('ap_brand').value),
-        vendorId: parseInt(document.getElementById('ap_vendor').value)
-    };
+// ---- ADMIN: PRODUCTS ----
+function loadAdminProducts() {
+    allAdminProducts = [...DEMO_PRODUCTS];
+    renderAdminProducts(allAdminProducts);
+}
 
-    if (!body.productName || !body.price || !body.categoryId) {
-        showToast('Sab required fields bharo!', 'error'); return;
+function renderAdminProducts(products) {
+    const container = document.getElementById('adminProductsList');
+    if (!products || products.length === 0) {
+        container.innerHTML = '<div class="loading">No products found</div>';
+        return;
+    }
+    container.innerHTML = `
+        <div style="overflow-x:auto;">
+        <table class="data-table">
+            <thead>
+                <tr><th>#</th><th>Product</th><th>Category</th><th>Brand</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                ${products.map(p => `
+                    <tr>
+                        <td>${p.ProductID}</td>
+                        <td><strong>${p.ProductName}</strong></td>
+                        <td>${p.CategoryName}</td>
+                        <td>${p.BrandName}</td>
+                        <td style="color:var(--primary); font-weight:700">${formatPKR(p.Price)}</td>
+                        <td>
+                            <span style="color: ${p.StockQuantity < 5 ? 'var(--danger)' : 'var(--success)'}; font-weight:600">
+                                ${p.StockQuantity}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="openEditProduct(${p.ProductID}, '${p.ProductName.replace(/'/g,"\\'")}', ${p.Price}, ${p.StockQuantity}, '${p.Description || ''}')">✏️ Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct(${p.ProductID}, '${p.ProductName.replace(/'/g,"\\'")}')">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        </div>
+    `;
+}
+
+function filterAdminProducts() {
+    const q = document.getElementById('adminProductSearch').value.toLowerCase();
+    const filtered = allAdminProducts.filter(p =>
+        p.ProductName.toLowerCase().includes(q) ||
+        p.CategoryName.toLowerCase().includes(q) ||
+        p.BrandName.toLowerCase().includes(q)
+    );
+    renderAdminProducts(filtered);
+}
+
+function openEditProduct(id, name, price, stock, desc) {
+    document.getElementById('edit_pid').value = id;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_price').value = price;
+    document.getElementById('edit_stock').value = stock;
+    document.getElementById('edit_desc').value = desc;
+    document.getElementById('editProductModal').classList.add('open');
+}
+
+function saveEditProduct() {
+    const id = parseInt(document.getElementById('edit_pid').value);
+    const name = document.getElementById('edit_name').value.trim();
+    const price = parseFloat(document.getElementById('edit_price').value);
+    const stock = parseInt(document.getElementById('edit_stock').value) || 0;
+    const catEl = document.getElementById('edit_category');
+    const catName = catEl.options[catEl.selectedIndex]?.text;
+    const desc = document.getElementById('edit_desc').value.trim();
+
+    if (!name || !price) { showToast('Product name and price are required!', 'error'); return; }
+
+    const idx = DEMO_PRODUCTS.findIndex(p => p.ProductID === id);
+    if (idx !== -1) {
+        DEMO_PRODUCTS[idx].ProductName = name;
+        DEMO_PRODUCTS[idx].Price = price;
+        DEMO_PRODUCTS[idx].StockQuantity = stock;
+        if (catName && catName !== 'Select...') DEMO_PRODUCTS[idx].CategoryName = catName;
+        DEMO_PRODUCTS[idx].Description = desc;
     }
 
-    const data = await apiCall('/products', 'POST', body);
-    showToast(data.success ? '✅ Product add ho gaya!' : data.message, data.success ? 'success' : 'error');
-    if (data.success) {
-        document.getElementById('ap_name').value = '';
-        document.getElementById('ap_price').value = '';
-        document.getElementById('ap_stock').value = '';
-        document.getElementById('ap_desc').value = '';
+    showToast('✅ Product updated successfully!');
+    document.getElementById('editProductModal').classList.remove('open');
+    loadAdminProducts();
+    loadProducts();
+}
+
+function deleteProduct(id, name) {
+    if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) return;
+    const idx = DEMO_PRODUCTS.findIndex(p => p.ProductID === id);
+    if (idx !== -1) DEMO_PRODUCTS.splice(idx, 1);
+    showToast(`🗑️ "${name}" deleted!`);
+    loadAdminProducts();
+    loadProducts();
+}
+
+function addProduct() {
+    const name = document.getElementById('ap_name').value.trim();
+    const price = parseFloat(document.getElementById('ap_price').value);
+    const stock = parseInt(document.getElementById('ap_stock').value) || 0;
+    const catEl = document.getElementById('ap_category');
+    const catName = catEl.options[catEl.selectedIndex]?.text || '';
+    const brandEl = document.getElementById('ap_brand');
+    const brandName = brandEl.options[brandEl.selectedIndex]?.text || '';
+    const desc = document.getElementById('ap_desc').value.trim();
+
+    if (!name || !price || !catName || catName === 'Select...') {
+        showToast('Product name, price and category are required!', 'error'); return;
+    }
+
+    const newId = Math.max(...DEMO_PRODUCTS.map(p => p.ProductID)) + 1;
+    DEMO_PRODUCTS.push({
+        ProductID: newId,
+        ProductName: name,
+        CategoryName: catName,
+        BrandName: brandName || 'Generic',
+        Price: price,
+        StockQuantity: stock,
+        Description: desc,
+        AvgRating: 0,
+        ReviewCount: 0,
+        VendorName: 'SwiftCart Official',
+        reviews: []
+    });
+
+    showToast('✅ Product added successfully!');
+    document.getElementById('ap_name').value = '';
+    document.getElementById('ap_price').value = '';
+    document.getElementById('ap_stock').value = '';
+    document.getElementById('ap_desc').value = '';
+    loadAdminProducts();
+    loadProducts();
+}
+
+// ---- ADMIN: ORDERS ----
+async function loadAdminOrders() {
+    const container = document.getElementById('adminOrdersList');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+    const statusFilter = document.getElementById('orderStatusFilter').value;
+    const endpoint = statusFilter ? `/admin/orders?status=${encodeURIComponent(statusFilter)}` : '/admin/orders';
+    const data = await apiCall(endpoint);
+
+    if (data.success || data.orders) {
+        allAdminOrders = data.orders || [];
+        renderAdminOrders(allAdminOrders);
+    } else {
+        container.innerHTML = '<div class="loading">Could not load orders ❌</div>';
     }
 }
 
+function renderAdminOrders(orders) {
+    const container = document.getElementById('adminOrdersList');
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<div class="loading">No orders found</div>';
+        return;
+    }
+    container.innerHTML = `
+        <div style="overflow-x:auto;">
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th><th>Update Status</th></tr></thead>
+            <tbody>
+                ${orders.map(o => `
+                    <tr>
+                        <td>#${o.OrderID}</td>
+                        <td>
+                            <strong>${o.FullName}</strong><br>
+                            <small style="color:var(--text-light)">${o.Email || ''}</small>
+                        </td>
+                        <td style="font-weight:700; color:var(--primary)">${formatPKR(o.TotalAmount)}</td>
+                        <td><small>${o.PaymentMethod || 'N/A'}</small></td>
+                        <td><span class="order-status status-${o.OrderStatus}">${o.OrderStatus}</span></td>
+                        <td>${new Date(o.OrderDate).toLocaleDateString()}</td>
+                        <td>
+                            <select onchange="updateOrderStatus(${o.OrderID}, this.value)" style="padding:0.3rem; border-radius:6px; border:1px solid var(--border); font-size:0.85rem;">
+                                ${['Pending','Processing','Shipped','Delivered','Cancelled'].map(s => `<option ${s === o.OrderStatus ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        </div>
+    `;
+}
+
+function filterAdminOrdersTable() {
+    const q = document.getElementById('orderCustomerSearch').value.toLowerCase();
+    const filtered = allAdminOrders.filter(o =>
+        (o.FullName || '').toLowerCase().includes(q) ||
+        (o.Email || '').toLowerCase().includes(q)
+    );
+    renderAdminOrders(filtered);
+}
+
+async function updateOrderStatus(orderId, status) {
+    const data = await apiCall(`/orders/${orderId}/status`, 'PUT', { status });
+    showToast(data.success ? `Order #${orderId} → ${status}` : (data.message || 'Update failed'), data.success ? 'success' : 'error');
+}
+
+// ---- ADMIN: CUSTOMERS ----
+async function loadCustomers() {
+    const container = document.getElementById('customerList');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+    const data = await apiCall('/admin/customers');
+    if (data.success || data.customers) {
+        allCustomers = data.customers || [];
+        renderCustomers(allCustomers);
+    } else {
+        container.innerHTML = '<div class="loading">Could not load customers ❌</div>';
+    }
+}
+
+function renderCustomers(customers) {
+    const container = document.getElementById('customerList');
+    if (!customers || customers.length === 0) {
+        container.innerHTML = '<div class="loading">No customers found</div>';
+        return;
+    }
+    container.innerHTML = customers.map(c => `
+        <div class="customer-row">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div class="customer-avatar">${(c.FullName || 'U')[0].toUpperCase()}</div>
+                <div>
+                    <div style="font-weight:700">${c.FullName}</div>
+                    <div style="color:var(--text-light); font-size:0.85rem">${c.Email}</div>
+                    ${c.Phone ? `<div style="color:var(--text-light); font-size:0.8rem">📞 ${c.Phone}</div>` : ''}
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-weight:800; font-size:1.2rem; color:var(--primary)">${c.TotalOrders || 0}</div>
+                <div style="font-size:0.8rem; color:var(--text-light)">Orders</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-weight:700; color:var(--success)">${formatPKR(c.TotalSpent || 0)}</div>
+                <div style="font-size:0.8rem; color:var(--text-light)">Total Spent</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem; color:var(--text-light)">Joined</div>
+                <div style="font-size:0.9rem; font-weight:600">${new Date(c.CreatedAt).toLocaleDateString()}</div>
+            </div>
+            <div>
+                <span style="background: ${c.IsActive ? '#C6F6D5' : '#FED7D7'}; color: ${c.IsActive ? '#22543D' : '#742A2A'}; padding:0.3rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;">
+                    ${c.IsActive ? '✓ Active' : '✗ Inactive'}
+                </span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterCustomers() {
+    const q = document.getElementById('customerSearch').value.toLowerCase();
+    const filtered = allCustomers.filter(c =>
+        (c.FullName || '').toLowerCase().includes(q) ||
+        (c.Email || '').toLowerCase().includes(q) ||
+        (c.Phone || '').includes(q)
+    );
+    renderCustomers(filtered);
+}
+
+// ---- ADMIN: COUPONS ----
 async function addCoupon() {
     const body = {
-        couponCode: document.getElementById('cp_code').value,
+        couponCode: document.getElementById('cp_code').value.trim(),
         discountPercent: parseInt(document.getElementById('cp_discount').value),
         expiryDate: document.getElementById('cp_expiry').value
     };
 
     if (!body.couponCode || !body.discountPercent || !body.expiryDate) {
-        showToast('Sab fields zarori hain!', 'error'); return;
+        showToast('All coupon fields are required!', 'error'); return;
     }
 
     const data = await apiCall('/admin/coupons', 'POST', body);
-    showToast(data.success ? '🎟️ Coupon add ho gaya!' : data.message, data.success ? 'success' : 'error');
-}
-
-async function updateOrderStatus(orderId, status) {
-    const data = await apiCall(`/orders/${orderId}/status`, 'PUT', { status });
-    showToast(data.success ? `Order #${orderId} → ${status}` : data.message, data.success ? 'success' : 'error');
+    showToast(data.success ? '🎟️ Coupon added successfully!' : (data.message || 'Failed'), data.success ? 'success' : 'error');
+    if (data.success) {
+        document.getElementById('cp_code').value = '';
+        document.getElementById('cp_discount').value = '';
+        document.getElementById('cp_expiry').value = '';
+    }
 }
 
 // =============================================
@@ -1090,11 +1657,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavForAuth();
     loadProducts();
     if (currentUser) updateCartBadge();
+    handlePaymentMethodChange();
 });
 
-// Close modal on overlay click
 document.getElementById('productModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
+});
+document.getElementById('paymentModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+});
+document.getElementById('editProductModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
 });
 </script>
 </body>
