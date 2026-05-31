@@ -105,5 +105,18 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error: ' + err.message });
     }
 });
-
+// Temporary — admin password reset
+router.get('/reset-admin', async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const hash = await bcrypt.hash('admin123', 10);
+        await pool.request()
+            .input('Hash', sql.VarChar, hash)
+            .input('Email', sql.VarChar, 'admin@swiftcart.com')
+            .query('UPDATE Users SET PasswordHash = @Hash WHERE Email = @Email');
+        res.json({ success: true, message: 'Password reset ho gaya! Password: admin123' });
+    } catch (err) {
+        res.json({ success: false, message: err.message });
+    }
+});
 module.exports = router;
