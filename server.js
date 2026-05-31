@@ -1,5 +1,5 @@
 // =============================================
-// server.js — Main Server Entry Point
+// server.js — Main Server Entry Point (FIXED)
 // =============================================
 
 require('dotenv').config();
@@ -13,8 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve frontend static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- ROUTES ----
@@ -22,26 +20,31 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
-const { default: paymentRoutes } = require('./routes/extra');
-const extraModule = require('./routes/extra');
+const wishlistRoutes = require('./routes/wishlist');  // ✅ FIXED
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/payments', extraModule);
-app.use('/api/wishlist', extraModule.wishlistRouter);
-app.use('/api/notifications', extraModule.notifRouter);
+app.use('/api/wishlist', wishlistRoutes);  // ✅ FIXED
 
-// ---- ADMIN DASHBOARD API ----
+// ---- EXTRA routes (payments) — only if file exists ----
+try {
+    const extraModule = require('./routes/extra');
+    if (extraModule.paymentRouter) app.use('/api/payments', extraModule.paymentRouter);
+    else app.use('/api/payments', extraModule);
+} catch (e) {
+    console.log('ℹ️ routes/extra.js nahi mila, skip.');
+}
+
+// ---- DB & AUTH ----
 const { sql, poolPromise } = require('./db');
 const { verifyToken, isAdmin } = require('./middleware/auth');
 
-// Dashboard stats
+// ---- ADMIN: Dashboard Stats ----
 app.get('/api/admin/stats', verifyToken, isAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
-
         const stats = await pool.request().query(`
             SELECT 
                 (SELECT COUNT(*) FROM Users WHERE RoleID = 2) AS TotalCustomers,
@@ -51,68 +54,72 @@ app.get('/api/admin/stats', verifyToken, isAdmin, async (req, res) => {
                 (SELECT COUNT(*) FROM Orders WHERE OrderStatus = 'Pending') AS PendingOrders,
                 (SELECT COUNT(*) FROM Returns WHERE ReturnStatus = 'Pending') AS PendingReturns
         `);
-
-        // Recent orders
         const recentOrders = await pool.request().query(`
             SELECT TOP 5 o.OrderID, u.FullName, o.TotalAmount, o.OrderStatus, o.OrderDate
-            FROM Orders o 
-            INNER JOIN Users u ON o.UserID = u.UserID
+            FROM Orders o INNER JOIN Users u ON o.UserID = u.UserID
             ORDER BY o.OrderDate DESC
         `);
-
-        // Top products
-        const topProducts = await pool.request().query(`
-            SELECT TOP 5 p.ProductName, SUM(od.Quantity) AS TotalSold
-            FROM OrderDetails od
-            INNER JOIN Products p ON od.ProductID = p.ProductID
-            GROUP BY p.ProductName
-            ORDER BY TotalSold DESC
-        `);
-
-        res.json({
-            success: true,
-            stats: stats.recordset[0],
-            recentOrders: recentOrders.recordset,
-            topProducts: topProducts.recordset
-        });
-
+        res.json({ success: true, stats: stats.recordset[0], recentOrders: recentOrders.recordset });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// All users (Admin)
-app.get('/api/admin/users', verifyToken, isAdmin, async (req, res) => {
+// ---- ADMIN: All Orders ----
+app.get('/api/admin/orders', verifyToken, isAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
-        const result = await pool.request().query(`
-            SELECT u.UserID, u.FullName, u.Email, u.Phone, u.IsActive, 
-                   u.CreatedAt, r.RoleName,
-                   (SELECT COUNT(*) FROM Orders WHERE UserID = u.UserID) AS OrderCount
-            FROM Users u
-            INNER JOIN Roles r ON u.RoleID = r.RoleID
-            ORDER BY u.CreatedAt DESC
-        `);
-        res.json({ success: true, users: result.recordset });
+        const { status } = req.query;
+        const request = pool.request();
+        let query = `
+            SELECT o.OrderID, u.FullName, u.Email, o.TotalAmount, 
+                   o.OrderStatus, o.OrderDate, o.PaymentMethod
+            FROM Orders o INNER JOIN Users u ON o.UserID = u.UserID
+        `;
+        if (status) {
+            request.input('Status', sql.VarChar, status);
+            query += ' WHERE o.OrderStatus = @Status';
+        }
+        query += ' ORDER BY o.OrderDate DESC';
+        const result = await request.query(query);
+        res.json({ success: true, orders: result.recordset });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// Toggle user active status
-app.put('/api/admin/users/:id/toggle', verifyToken, isAdmin, async (req, res) => {
+// ---- ADMIN: Update Order Status ----
+app.put('/api/orders/:orderId/status', verifyToken, isAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
         await pool.request()
-            .input('UserID', sql.Int, req.params.id)
-            .query('UPDATE Users SET IsActive = CASE WHEN IsActive=1 THEN 0 ELSE 1 END WHERE UserID=@UserID');
-        res.json({ success: true, message: 'User status update ho gaya!' });
+            .input('OrderID', sql.Int, req.params.orderId)
+            .input('Status', sql.VarChar, req.body.status)
+            .query('UPDATE Orders SET OrderStatus = @Status WHERE OrderID = @OrderID');
+        res.json({ success: true, message: 'Order status update ho gaya!' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// Add coupon (Admin)
+// ---- ADMIN: Customers ----
+app.get('/api/admin/customers', verifyToken, isAdmin, async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
+            SELECT u.UserID, u.FullName, u.Email, u.Phone, u.IsActive, u.CreatedAt,
+                   (SELECT COUNT(*) FROM Orders WHERE UserID = u.UserID) AS TotalOrders,
+                   (SELECT ISNULL(SUM(TotalAmount),0) FROM Orders WHERE UserID = u.UserID AND OrderStatus != 'Cancelled') AS TotalSpent
+            FROM Users u WHERE u.RoleID = 2
+            ORDER BY u.CreatedAt DESC
+        `);
+        res.json({ success: true, customers: result.recordset });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ---- ADMIN: Add Coupon ----
 app.post('/api/admin/coupons', verifyToken, isAdmin, async (req, res) => {
     try {
         const { couponCode, discountPercent, expiryDate } = req.body;
@@ -128,34 +135,7 @@ app.post('/api/admin/coupons', verifyToken, isAdmin, async (req, res) => {
     }
 });
 
-// Get all coupons
-app.get('/api/admin/coupons', verifyToken, isAdmin, async (req, res) => {
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request().query('SELECT * FROM Coupons ORDER BY ExpiryDate DESC');
-        res.json({ success: true, coupons: result.recordset });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-// Inventory logs (Admin)
-app.get('/api/admin/inventory', verifyToken, isAdmin, async (req, res) => {
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request().query(`
-            SELECT il.*, p.ProductName 
-            FROM InventoryLogs il
-            INNER JOIN Products p ON il.ProductID = p.ProductID
-            ORDER BY il.UpdatedAt DESC
-        `);
-        res.json({ success: true, logs: result.recordset });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-// User profile
+// ---- PROFILE ----
 app.get('/api/profile', verifyToken, async (req, res) => {
     try {
         const pool = await poolPromise;

@@ -1,5 +1,5 @@
 // =============================================
-// routes/cart.js — Cart APIs
+// routes/cart.js — Cart APIs (FIXED)
 // =============================================
 
 const express = require('express');
@@ -32,19 +32,29 @@ router.get('/', verifyToken, async (req, res) => {
     }
 });
 
-// ---- ADD TO CART ----
+// ---- ADD TO CART (FIXED) ----
 router.post('/add', verifyToken, async (req, res) => {
     try {
-        const { productId, quantity } = req.body;
+        const { productId, quantity = 1 } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ success: false, message: 'Product ID nahi mila.' });
+        }
+
         const pool = await poolPromise;
 
-        // Check stock
+        // Check product exists + stock
         const stock = await pool.request()
             .input('ProductID', sql.Int, productId)
-            .query('SELECT StockQuantity FROM Products WHERE ProductID = @ProductID');
+            .query('SELECT ProductID, StockQuantity FROM Products WHERE ProductID = @ProductID AND IsDeleted = 0');
+
+        // ✅ NULL CHECK — yahi fix hai
+        if (!stock.recordset || stock.recordset.length === 0) {
+            return res.status(404).json({ success: false, message: 'Product database mein nahi mila. ProductID: ' + productId });
+        }
 
         if (stock.recordset[0].StockQuantity < quantity) {
-            return res.status(400).json({ success: false, message: 'Itna stock nahi hai.' });
+            return res.status(400).json({ success: false, message: 'Stock nahi hai.' });
         }
 
         // Check if already in cart
@@ -54,16 +64,15 @@ router.post('/add', verifyToken, async (req, res) => {
             .query('SELECT CartID, Quantity FROM Cart WHERE UserID=@UserID AND ProductID=@ProductID');
 
         if (existing.recordset.length > 0) {
-            // Update quantity
             await pool.request()
                 .input('CartID', sql.Int, existing.recordset[0].CartID)
-                .input('Quantity', sql.Int, existing.recordset[0].Quantity + quantity)
+                .input('Quantity', sql.Int, existing.recordset[0].Quantity + parseInt(quantity))
                 .query('UPDATE Cart SET Quantity = @Quantity WHERE CartID = @CartID');
         } else {
             await pool.request()
                 .input('UserID', sql.Int, req.user.userId)
                 .input('ProductID', sql.Int, productId)
-                .input('Quantity', sql.Int, quantity)
+                .input('Quantity', sql.Int, parseInt(quantity))
                 .query('INSERT INTO Cart (UserID, ProductID, Quantity) VALUES (@UserID, @ProductID, @Quantity)');
         }
 
