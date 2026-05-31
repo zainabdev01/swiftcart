@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -459,6 +459,7 @@
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Credit Card">Credit Card</option>
             </select>
+<div id="paymentDetails"></div>
         </div>
         <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:1rem;">Order amount: <strong id="payAmount" style="color:var(--primary)"></strong></p>
         <button class="btn-full" onclick="confirmPayment()">Confirm Payment ✓</button>
@@ -884,6 +885,19 @@ async function placeOrder() {
 async function confirmPayment() {
     if (!pendingOrderId) return;
     const payMethod = document.getElementById('payMethod').value;
+const accountNumber = document.getElementById('accountNumber')?.value || '';
+const transactionId = document.getElementById('transactionId')?.value || '';
+const bankName = document.getElementById('bankName')?.value || '';
+const cardNumber = document.getElementById('cardNumber')?.value || '';
+const cardHolder = document.getElementById('cardHolder')?.value || '';
+
+console.log({
+    accountNumber,
+    transactionId,
+    bankName,
+    cardNumber,
+    cardHolder
+});
     const data = await apiCall('/payments', 'POST', { orderId: pendingOrderId, paymentMethod: payMethod });
     if (data.success) {
         document.getElementById('paymentModal').classList.remove('open');
@@ -1061,11 +1075,80 @@ async function updateOrderStatus(orderId, status) {
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
+
     updateNavForAuth();
     loadProducts();
-    if (currentUser) updateCartBadge();
-});
 
+    if (currentUser)
+        updateCartBadge();
+
+    const payMethod = document.getElementById('payMethod');
+
+    if (payMethod) {
+        payMethod.addEventListener('change', renderPaymentFields);
+        renderPaymentFields();
+    }
+
+});
+function renderPaymentFields() {
+
+    const method = document.getElementById('payMethod').value;
+    const container = document.getElementById('paymentDetails');
+
+    if (method === 'EasyPaisa' || method === 'JazzCash') {
+
+        container.innerHTML = `
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="accountNumber" placeholder="03XXXXXXXXX">
+            </div>
+
+            <div class="form-group">
+                <label>Transaction ID</label>
+                <input type="text" id="transactionId" placeholder="TXN123">
+            </div>
+        `;
+
+    }
+
+    else if (method === 'Bank Transfer') {
+
+        container.innerHTML = `
+            <div class="form-group">
+                <label>Bank Name</label>
+                <input type="text" id="bankName">
+            </div>
+
+            <div class="form-group">
+                <label>Transaction ID</label>
+                <input type="text" id="transactionId">
+            </div>
+        `;
+
+    }
+
+    else if (method === 'Credit Card') {
+
+        container.innerHTML = `
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" id="cardNumber">
+            </div>
+
+            <div class="form-group">
+                <label>Card Holder Name</label>
+                <input type="text" id="cardHolder">
+            </div>
+        `;
+
+    }
+
+    else {
+
+        container.innerHTML = '';
+
+    }
+}
 document.getElementById('productModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
 });
